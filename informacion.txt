@@ -1,0 +1,145 @@
+Guía paso a paso: Convertir tu IA web (HTML/CSS/JS) a una APK de Android
+En esta guía usarás Capacitor, una herramienta moderna y oficial de Ionic para convertir aplicaciones web en aplicaciones nativas. Te permitirá empaquetar todos tus archivos (index.html, app.css, andrea-app.js, personality.js, tools.js, admin.html, login_register.html, imágenes, etc.) dentro de un proyecto de Android y generar una APK que puedas instalar en tu teléfono o compartir.
+
+1. Prerrequisitos
+Antes de empezar, asegúrate de tener instalado lo siguiente:
+
+Node.js (versión 14 o superior) → Descargar
+
+Android Studio → Descargar (incluye las herramientas de compilación, SDK, etc.)
+
+Un editor de código (opcional, pero recomendado: Visual Studio Code)
+
+Verifica que node y npm funcionan abriendo una terminal (cmd, PowerShell o terminal de tu sistema) y ejecutando:
+
+bash
+node --version
+npm --version
+Ambos deben mostrar una versión.
+
+2. Crear una carpeta para tu proyecto
+Crea una carpeta donde pondrás todo el código. Por ejemplo:
+
+text
+mkdir AndreaAI-Android
+cd AndreaAI-Android
+3. Copiar todos los archivos de tu web
+Copia todos los archivos que tienes actualmente (index.html, app.css, andrea-app.js, personality.js, tools.js, admin.html, login_register.html, icon_AI.png, etc.) dentro de esta carpeta. La estructura debe quedar similar a:
+
+text
+AndreaAI-Android/
+│
+├── index.html
+├── app.css
+├── andrea-app.js
+├── personality.js
+├── tools.js
+├── admin.html
+├── login_register.html
+├── icon_AI.png
+└── ... (otros archivos o carpetas)
+Nota: Si tienes rutas a archivos (ej. src="icon_AI.png") asegúrate de que las rutas sean relativas y funcionen en local; con Capacitor se mantendrán igual.
+
+4. Inicializar el proyecto con Capacitor
+4.1. Inicializar un proyecto Node.js
+Dentro de la carpeta del proyecto, ejecuta:
+
+bash
+npm init -y
+Esto crea un archivo package.json básico.
+
+4.2. Instalar Capacitor
+bash
+npm install @capacitor/core @capacitor/cli
+4.3. Inicializar Capacitor
+Ejecuta:
+
+bash
+npx cap init
+Te preguntará:
+
+App name: AndreaAI (o el nombre que quieras)
+
+App ID: com.tunombre.andreaaai (un identificador único, estilo dominio invertido)
+
+Web assets directory: . (el punto indica que los archivos web están en la raíz)
+
+Confirma con Enter.
+
+4.4. Agregar la plataforma Android
+bash
+npx cap add android
+Esto creará una carpeta android/ con el proyecto nativo de Android.
+
+5. Sincronizar los archivos web con el proyecto Android
+Cada vez que modifiques los archivos HTML/CSS/JS, debes ejecutar:
+
+bash
+npx cap copy android
+Este comando copia todos tus archivos web a la carpeta android/app/src/main/assets/public/. Si no lo haces, los cambios no se verán reflejados en la APK.
+
+6. Personalizar la configuración de Android (opcional pero recomendado)
+6.1. Permitir acceso a Internet
+Por defecto, Capacitor ya incluye el permiso de Internet en AndroidManifest.xml. Para verificarlo, abre:
+
+text
+android/app/src/main/AndroidManifest.xml
+Busca dentro de <manifest> esta línea:
+
+xml
+<uses-permission android:name="android.permission.INTERNET" />
+Si no aparece, agrégala antes de <application>.
+
+6.2. Ajustes de WebView (para que la app se vea mejor)
+Abre el archivo android/app/src/main/java/com/tunombre/andreaaai/MainActivity.java y asegúrate de que extienda BridgeActivity. Si quieres habilitar el zoom o mejorar el rendimiento, puedes añadir configuraciones en el archivo android/app/src/main/assets/capacitor.config.json (o capacitor.config.json en la raíz). Normalmente no es necesario, pero si tu app requiere localStorage y ejecutar JavaScript, ya funciona por defecto.
+
+6.3. Ajustar el ícono y splash screen
+Puedes personalizar el ícono de la app reemplazando los recursos en android/app/src/main/res/mipmap-*. También puedes modificar el color de la barra de estado en res/values/colors.xml.
+
+7. Construir la APK (debug o release)
+7.1. APK de depuración (debug) – para probar
+Abre Android Studio y selecciona la carpeta android/ de tu proyecto. Espera a que se indexe.
+
+Luego, desde el menú Build → Build Bundle(s) / APK(s) → Build APK(s). Esto generará una APK de depuración en:
+
+text
+android/app/build/outputs/apk/debug/app-debug.apk
+Esta APK se puede instalar directamente en tu teléfono (necesitarás habilitar "Instalar desde orígenes desconocidos").
+
+7.2. APK de release (firmada) – para distribuir
+Para generar una APK firmada que pueda instalarse sin problemas:
+
+En Android Studio, ve a Build → Generate Signed Bundle / APK.
+
+Selecciona APK y haz clic en Next.
+
+Crea una nueva clave de firma (keystore) o usa una existente. Si es la primera vez, selecciona Create new y rellena los datos. Guarda la contraseña y el archivo .jks en un lugar seguro.
+
+Completa los campos y haz clic en Next.
+
+En Signature Versions, marca V1 (Jar Signature) y V2 (Full APK Signature).
+
+Haz clic en Finish.
+
+La APK firmada aparecerá en android/app/release/app-release.apk.
+
+8. Instalar la APK en tu dispositivo
+Transfiere la APK a tu teléfono (por USB, correo, etc.) y ábrela desde el administrador de archivos. Permite la instalación de orígenes desconocidos si es necesario. Una vez instalada, verás el icono de AndreaAI en tu pantalla de aplicaciones.
+
+9. Actualizaciones futuras
+Si modificas el código web:
+
+Copia los cambios a la carpeta del proyecto.
+
+Ejecuta npx cap copy android para sincronizar.
+
+Abre Android Studio y vuelve a generar la APK (Build → Build APK(s)).
+
+Solución de problemas comunes
+La app se abre en blanco: Asegúrate de que el archivo index.html está en la raíz y que la ruta de capacitor.config.json apunta al directorio correcto (.) en webDir.
+
+No carga los estilos o JS: Verifica que los archivos existen y que en index.html las rutas a app.css y andrea-app.js sean relativas (ej. href="app.css").
+
+Error "WebView not found": Instala Android SDK (desde Android Studio → SDK Manager) y asegúrate de tener el SDK de Android 30 o superior.
+
+Permiso de almacenamiento: Si tu app usa archivos locales, quizá necesites pedir permisos. Capacitor tiene plugins para eso.
