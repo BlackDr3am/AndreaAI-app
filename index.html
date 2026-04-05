@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="app.css">
+    <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
     <div class="mobile-overlay" id="mobile-overlay"></div>
@@ -15,16 +15,14 @@
     <div class="main-wrapper">
         <aside class="sidebar" id="sidebar">
             <div class="brand">
-                <img class="icon-format" src="icon_AI.png" alt="AI Icon">
+                <img class="icon-format" src="icons/icon_AI.png" alt="AI Icon">
                 <span>Andrea<span class="gradient-text">AI</span></span>
             </div>
 
             <!-- Área de usuario (se actualiza dinámicamente) -->
             <div class="user-info" id="user-info-area" style="padding: 10px 16px; border-bottom: 1px solid var(--border);">
                 <div id="user-logged-out" style="display: flex; justify-content: center; gap: 8px;">
-                    <a href="login_register.html" class="btn-new-chat" style="background: #2b6ed9; margin: 0; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
-                        <i class="fas fa-sign-in-alt"></i> Iniciar sesión
-                    </a>
+
                 </div>
                 <div id="user-logged-in" style="display: none; flex-direction: column; gap: 8px;">
                     <div style="display: flex; align-items: center; gap: 8px;">
@@ -74,6 +72,10 @@
             <div style="flex: 1;"></div>
 
             <div class="footer-actions">
+                <!-- Botón para cambiar tema claro/oscuro -->
+                <button id="theme-toggle" class="btn-config" title="Cambiar tema" onclick="toggleTheme()">
+                    <i class="fas fa-adjust"></i>
+                </button>
                 <a href="admin.html" class="btn-config" title="Settings">
                     <i class="fas fa-user-shield"></i>
                 </a>
@@ -147,8 +149,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="personality.js"></script>
-    <script src="andrea-app.js"></script>
-    <script src="tools.js"></script>
+    <script src="js/personality.js"></script>
+    <script src="js/andrea-app.js"></script>
+    <script src="js/tools.js"></script>
 </body>
 </html>
