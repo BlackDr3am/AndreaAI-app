@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AndreaAI - Personal Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/app.css">
+    <style>
+        /* Estilos adicionales para asegurar visibilidad */
+        .personality-panel { padding: 16px; border-top: 1px solid var(--border); margin-top: 12px; }
+        .conv-actions { display: flex; align-items: center; gap: 8px; }
+        .btn-delete-conv { background: none; border: none; color: #888; cursor: pointer; }
+        .btn-delete-conv:hover { color: #ff4444; }
+        .typing-indicator .message-content { background: #2d2d2d; }
+        #emotion-indicator { font-size: 12px; margin-left: 8px; background: var(--accent); padding: 4px 8px; border-radius: 20px; }
+    </style>
+</head>
+<body>
+    <div class="mobile-overlay" id="mobile-overlay"></div>
+
+    <div class="main-wrapper">
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <img class="icon-format" src="icons/icon_AI.png" alt="AI Icon">
+                <span>Andrea<span class="gradient-text">AI</span></span>
+            </div>
+
+            <!-- Área de usuario -->
+            <div class="user-info" id="user-info-area" style="padding: 10px 16px; border-bottom: 1px solid var(--border);">
+                <div id="user-logged-out" style="display: flex; justify-content: center; gap: 8px;"></div>
+                <div id="user-logged-in" style="display: none; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-user-circle" style="font-size: 24px;"></i>
+                        <span id="user-email-display" style="flex:1; overflow: hidden; text-overflow: ellipsis;"></span>
+                        <button id="logout-btn" class="btn-thinking" style="width: auto; padding: 0 12px;">Salir</button>
+                    </div>
+                </div>
+            </div>
+
+            <button id="new-chat-btn" class="btn-new-chat">
+                <i class="fas fa-plus"></i>
+                <span>New Chat</span>
+            </button>
+
+            <div class="history-collapsible">
+                <div class="history-collapsible-toggle" id="history-toggle">
+                    <span><i class="fas fa-history"></i> History</span>
+                    <i class="fas fa-chevron-down" id="history-icon"></i>
+                </div>
+                <div class="history-collapsible-content" id="history-content" style="display: block;">
+                    <div id="conversation-history-list" class="conversation-history-list"></div>
+                    <div class="history-actions">
+                        <button id="clear-all-history" class="btn-history-action">
+                            <i class="fas fa-trash-alt"></i> Clear All
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Writer Mode panel -->
+            <div class="writer-mode-collapsible">
+                <div class="writer-mode-toggle" id="writer-mode-toggle">
+                    <span><i class="fas fa-pen-fancy"></i> Writer Mode</span>
+                    <i class="fas fa-chevron-down" id="writer-mode-icon"></i>
+                </div>
+                <div class="writer-mode-content" id="writer-mode-content" style="display: none;">
+                    <button id="new-writer-chat" class="btn-new-writer"><i class="fas fa-plus"></i> New conversation</button>
+                    <div id="writer-history-list-sidebar" class="writer-history-list-sidebar"></div>
+                </div>
+            </div>
+
+            <!-- Panel de personalidad (necesario para los controles) -->
+            <div class="personality-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <span><i class="fas fa-brain"></i> Personalidad</span>
+                    <button id="personality-diagnostic" class="btn-config" style="padding: 4px 8px;">Diagnóstico</button>
+                </div>
+                <select id="thinking-level-select" class="form-select form-select-sm" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border);">
+                    <option value="light">Rápido</option>
+                    <option value="deep" selected>Profundo</option>
+                    <option value="analytical">Analítico</option>
+                    <option value="philosophical">Filosófico</option>
+                </select>
+                <button id="toggle-humor" class="btn-config" style="margin-top: 8px; width: 100%;">
+                    <i class="fas fa-smile"></i> Humor
+                </button>
+            </div>
+
+            <div style="flex: 1;"></div>
+
+            <div class="footer-actions">
+                <button id="theme-toggle" class="btn-config" title="Cambiar tema">
+                    <i class="fas fa-adjust"></i>
+                </button>
+                <a href="admin.html" class="btn-config" title="Settings">
+                    <i class="fas fa-user-shield"></i>
+                </a>
+                <button class="toggle-sidebar-btn" id="sidebar-toggle-footer">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            </div>
+        </aside>
+
+        <main class="content-area">
+            <header class="main-header">
+                <button class="toggle-sidebar-btn" id="sidebar-toggle-header">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div style="flex: 1; margin-left: 15px;">
+                    <h2 style="margin: 0; font-size: 18px;">
+                        AndreaAI 
+                    </h2>
+                </div>
+            </header>
+
+            <!-- Normal chat section -->
+            <section id="chat-section" class="content-section active">
+                <div id="chat-box" class="chat-container">
+                    <div class="empty-state">
+                        <img class="icon-format" src="icons/icon_AI.png" alt="AI Icon">
+                        <h2>Welcome, I'm Andrea</h2>
+                        <p>Select a conversation from history or start a new one.</p>
+                    </div>
+                </div>
+
+                <div class="input-area">
+                    <div class="input-wrapper">
+                        <button id="toggle-thinking" class="btn-thinking" title="Thinking Mode">
+                            <i class="fas fa-brain"></i>
+                        </button>
+                        <textarea id="user-input" placeholder="Write a message... (Press Enter to send)" rows="1"></textarea>
+                        <button id="send-btn" class="btn-send">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Writer Mode section -->
+            <section id="writer-mode-section" class="content-section" style="display: none;">
+                <div class="writer-mode-container">
+                    <div class="writer-mode-header">
+                        <h2><i class="fas fa-pen-fancy"></i> Writer Mode</h2>
+                        <button id="exit-writer-mode" class="btn-exit-writer"><i class="fas fa-times"></i> Exit</button>
+                    </div>
+                    <div class="writer-mode-input-area">
+                        <label for="writer-prompt">Tell Andrea what to write:</label>
+                        <textarea id="writer-prompt" placeholder="E.g., Write a 4-stanza poem about the moon..."></textarea>
+                        <button id="writer-generate-btn" class="btn-generate">Generate text</button>
+                    </div>
+                    <div class="writer-mode-output-area">
+                        <div class="output-header">
+                            <span>Generated text:</span>
+                            <button id="copy-writer-output" class="btn-copy"><i class="fas fa-copy"></i> Copy</button>
+                        </div>
+                        <div id="writer-output" class="writer-output" contenteditable="false"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Cargar los scripts en orden -->
+    <script src="src/main.js" type="module"></script>
+</body>
+</html>

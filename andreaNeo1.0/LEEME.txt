@@ -1,0 +1,11 @@
+Para inicar andrea se puede hacer de varias maneras:
+
+1)abre con live server:si portas vs code como editor de codigo instala la extension de live server, descargar el archivo de el repositorio y extraelo, abre la carpeta en vs code ir al index.html y darle click derecho y busca la opcion de live server y luego ve a la url que te indique
+
+2)con python:si tienes python 3 instalado en tu equipo descargas el archivo de el repositorio y lo extraes, luego abre la consola en la carpeta raiz del proyecto y elecuta python3 -m http.server 8000 y luego en tu navegador ve a localhost:8000
+
+
+
+
+
+
